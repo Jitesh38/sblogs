@@ -2,6 +2,9 @@ const db = require("../db/db.config");
 const ApiResponse = require('../utils/ApiResponse');
 const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
+const jwt = require('jsonwebtoken');
+const { encryptPassword, decryptPassword } = require('../db/db.password');
+
 
 
 // create user
@@ -15,14 +18,15 @@ const createUser = asyncHandler(async (req, res, next) => {
     });
 
     if (findUser) {
-        throw new ApiError(400, 'Email already exist')
+        throw new ApiError(400, 'Please enter a valid email address', ['EmailID already exist ']);
     }
+    let encryptedPassword = await encryptPassword(password);
 
     const user = await db.user.create({
         data: {
             name: name,
             email: email,
-            password: password,
+            password: encryptedPassword,
         },
     });
 
@@ -36,10 +40,10 @@ const showUser = asyncHandler(async (req, res, next) => {
         where: {
             id: Number(userID),
         },
-        select:{
-            _count:{
-                select:{
-                    post:true
+        select: {
+            _count: {
+                select: {
+                    post: true
                 }
             }
         }
@@ -53,8 +57,9 @@ const showUser = asyncHandler(async (req, res, next) => {
 })
 
 const showAllUser = async (req, res, next) => {
+    console.log(req.user);
     const findUser = await db.user.findMany({});
-    res.status(201).json(findUser);
+    res.json(findUser);
 };
 
 const updateUser = asyncHandler(async (req, res, next) => {
@@ -86,8 +91,42 @@ const deleteUser = async (req, res) => {
 
     res
         .status(200)
-        .json({ statusCode: 200, message: "User deleted successfully",user });
+        .json({ statusCode: 200, message: "User deleted successfully", user });
 };
+
+
+const loginUser = asyncHandler(async (req, res, next) => {
+    const { email, password } = req.body;
+
+    const user = await db.user.findFirst({
+        where: {
+            email
+        }
+    })
+
+    let checkPassword = await decryptPassword(password, user.password);
+
+    if (!checkPassword) {
+        throw new ApiError(400, 'Please enter correct password');
+    }
+
+    let accessToken = jwt.sign({
+        id:user.id,
+        email:user.email
+    },process.env.ACESS_TOKEN_SECRET,{
+        expiresIn:process.env.ACESS_TOKEN_EXPIRY
+    });
+
+    const options = {
+        httpOnly:true,
+        secure:false
+    }    
+
+    return res
+    .cookie('accessToken',accessToken,options)
+    .json(new ApiResponse(200, {}, 'Login successfully'))
+
+})
 
 module.exports = {
     createUser,
@@ -95,4 +134,5 @@ module.exports = {
     showUser,
     updateUser,
     deleteUser,
+    loginUser
 };
