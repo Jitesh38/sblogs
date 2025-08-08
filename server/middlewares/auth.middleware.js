@@ -4,6 +4,7 @@ const asyncHandler = require('../utils/asyncHandler');
 const ApiError = require('../utils/ApiError');
 
 const varifyJWT = asyncHandler(async (req, res, next) => {
+    console.log(req.body);
     const accessToken = req.cookies?.accessToken ||
         req.header('Authorization')?.replace("Bearer ", "");
     if (!accessToken) {
@@ -22,7 +23,9 @@ const varifyJWT = asyncHandler(async (req, res, next) => {
         select:{
             id:true,
             email:true,
-            name:true
+            username:true,
+            fullname:true,
+            avatar:true
         }
     })
     if (!user) {

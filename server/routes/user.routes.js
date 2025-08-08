@@ -1,15 +1,17 @@
 const express = require('express');
-const { createUser, showUser, showAllUser, updateUser, deleteUser,loginUser } = require('../controllers/user.controller');
+const { createUser, showUser, currentUser, updateUser, deleteUser, loginUser, logoutUser } = require('../controllers/user.controller');
 const varifyJWT = require('../middlewares/auth.middleware');
+const upload = require('../middlewares/multer.middleware');
 
 const router = express.Router();
 
-router.post('/register', createUser);
+router.post('/register',upload.single('avatar'), createUser);
 router.post('/login', loginUser);
-router.get('/:id', showUser);
-router.get('/',varifyJWT, showAllUser);
-router.put('/:id', updateUser);
+router.get('/logout',varifyJWT, logoutUser);
+router.get('/', varifyJWT, currentUser);
+router.put('/',varifyJWT,upload.single('avatar'), updateUser);
 router.delete('/:id', deleteUser);
+router.get('/:id', showUser);
 
 
 module.exports = router;
