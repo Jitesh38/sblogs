@@ -11,7 +11,7 @@ router.get('/logout',varifyJWT, logoutUser);
 router.get('/', varifyJWT, currentUser);
 router.put('/',varifyJWT,upload.single('avatar'), updateUser);
 router.delete('/:id', deleteUser);
-router.get('/:id', showUser);
+router.get('/s/:uname', showUser);
 
 
 module.exports = router;

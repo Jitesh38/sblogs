@@ -6,17 +6,17 @@ const asyncHandler = require('../utils/asyncHandler');
 
 // create user
 const createComment = asyncHandler(async (req, res, next) => {
-    const { postid, content } = req.body;
+    const { postid, comment } = req.body;
 
-    const comment = await db.comment.create({
+    const newComment = await db.comment.create({
         data:{
             post_id:Number(postid),
             user_id:Number(req.user?.id),
-            comment:content
+            comment
         }
     })
 
-    res.status(201).json(new ApiResponse(201, comment, "Comment created successfully"));
+    res.status(201).json(new ApiResponse(201, newComment, "Comment created successfully"));
 })
 
 

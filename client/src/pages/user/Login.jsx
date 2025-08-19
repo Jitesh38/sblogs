@@ -1,10 +1,12 @@
-import React,{useState} from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router";
-import { updateData } from '../../utils'
+import { updateData } from "../../utils";
+import { UserContext } from "../../UserContextProvider/UserContextProvider";
 
 function Login() {
   document.title = "Sblogs - Login";
 
+  const { setUser } = useContext(UserContext);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
@@ -25,6 +27,7 @@ function Login() {
     console.log(data);
     if (data) {
       sessionStorage.setItem("token", data?.accessToken);
+      setUser(data);
       navigate("/");
     }
   };

@@ -14,6 +14,8 @@ import {
   UserProfile,
   All_Blogs,
   BlogPostPage,
+  PublicUserProfile,
+  BookmarkedPost,
 } from "./pages/index.js";
 import PostForm from "./components/post-form/PostForm.jsx";
 import Protected from "./components/Protected.jsx";
@@ -33,8 +35,38 @@ const router = createBrowserRouter(
           </Protected>
         }
       />
-      <Route path="blog/:id" element={<BlogPostPage />} />
-      <Route path="/add-post" element={<PostForm />} />
+      <Route
+        path="blog/:id"
+        element={
+          <Protected>
+            <BlogPostPage />
+          </Protected>
+        }
+      />
+      <Route
+        path="/add-post"
+        element={
+          <Protected>
+            <PostForm />
+          </Protected>
+        }
+      />
+      <Route
+        path="/user/:username"
+        element={
+          <Protected>
+            <PublicUserProfile />
+          </Protected>
+        }
+      />
+      <Route
+        path="/bookmarks"
+        element={
+          <Protected>
+            <BookmarkedPost />
+          </Protected>
+        }
+      />
     </Route>
   )
 );

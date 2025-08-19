@@ -40,26 +40,25 @@ const createUser = asyncHandler(async (req, res, next) => {
 })
 
 const showUser = asyncHandler(async (req, res, next) => {
-    const userID = req.params.id;
+    const username = req.params.uname;
 
     const findUser = await db.user.findFirst({
         where: {
-            id: Number(userID),
-        },
-        select: {
-            _count: {
-                select: {
-                    post: true
-                }
-            }
+            username:username
         }
     });
+
+    const post = await db.post.findMany({
+        where:{
+            user:findUser
+        }
+    })
 
     if (!findUser) {
         throw new ApiError(404, "User not found", ['provide valid user id'])
     }
 
-    return res.status(200).json(new ApiResponse(200, findUser, "User found successfully"));
+    return res.status(200).json(new ApiResponse(200, {...findUser,post}, "User found successfully"));
 })
 
 const currentUser = asyncHandler(async (req, res, next) => {
@@ -141,7 +140,7 @@ const loginUser = asyncHandler(async (req, res, next) => {
     }
     return res
         .cookie('accessToken', accessToken, options)
-        .json(new ApiResponse(200, {accessToken}, 'Login successfully'))
+        .json(new ApiResponse(200, { accessToken }, 'Login successfully'))
 
 })
 

@@ -4,7 +4,7 @@ const BlogCard = ({ title, description, image, author, date }) => {
   return (
     <div className="card w-full bg-base-100 shadow-xl">
       <figure>
-        <img src={image} alt="Blog" className="h-48 w-full object-cover" />
+        <img src={image} alt="Blog" className="w-full h-48 object-cover rounded-t-2xl" />
       </figure>
       <div className="card-body">
         <h2 className="card-title">{title}</h2>
